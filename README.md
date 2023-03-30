@@ -2,4 +2,5 @@
 proxy for m3u8 files
 
 
-to use proxy goto http://localhost:5010/cors?url={m3u8_url}
+you can host on vercel or use
+https://masterz-cors.vercel.app/cors?url={m3u8_url}
