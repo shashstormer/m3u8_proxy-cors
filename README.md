@@ -2,5 +2,6 @@
 proxy for m3u8 files
 
 
-you can host on vercel or use
+you can host on vercel
+
 https://{your-domain}.vercel.app/cors?url={m3u8_url}
