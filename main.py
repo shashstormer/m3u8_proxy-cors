@@ -5,7 +5,6 @@ from fastapi import FastAPI, Request, Response
 from fastapi.responses import RedirectResponse
 
 app = FastAPI()
-sb_stream_domains = ['']
 
 
 async def home(request: Request) -> Response:
@@ -19,7 +18,6 @@ async def handle(request: Request):
     headers_ = json.loads(headers_)
     async with aiohttp.ClientSession(headers=headers_) as session:
         url = request.query_params.get('url')
-
         if url.endswith('.m3u8'):
             async with session.get(url) as resp:
                 headers = resp.headers.copy()
@@ -46,6 +44,10 @@ async def handle(request: Request):
                 for line in text.split('\n'):
                     if line.startswith('#'):
                         modified_text += line + '\n'
+                        continue
+                    if line.startswith("https://"):
+                        modified_text += '/cors?url=' + line + '&headers=' + json.dumps(
+                            dict(ret_head)) + '\n'
                         continue
                     modified_text += '/cors?url=' + base_url + line + '&headers=' + json.dumps(
                         dict(ret_head)) + '\n'
