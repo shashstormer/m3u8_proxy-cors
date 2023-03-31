@@ -1,23 +1,25 @@
 import json
-
 import aiohttp
 import uvicorn
 from fastapi import FastAPI, Request, Response
 from fastapi.responses import RedirectResponse
 
-
 app = FastAPI()
+sb_stream_domains = ['']
+
 
 async def home(request: Request) -> Response:
     return RedirectResponse("/docs")
 
+
 @app.get('/cors')
 async def handle(request: Request):
     headers_ = request.query_params.get('headers',
-                                 "{\"User-Agent\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/111.0.0.0 Safari/537.36}\"}")
+                                        "{\"User-Agent\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/111.0.0.0 Safari/537.36}\"}")
     headers_ = json.loads(headers_)
     async with aiohttp.ClientSession(headers=headers_) as session:
         url = request.query_params.get('url')
+
         if url.endswith('.m3u8'):
             async with session.get(url) as resp:
                 headers = resp.headers.copy()
@@ -25,17 +27,21 @@ async def handle(request: Request):
                 headers['Access-Control-Allow-Origin'] = '*'
                 headers['Access-Control-Expose-Headers'] = 'Content-Disposition'
                 headers['Content-Disposition'] = 'attachment; filename="master.m3u8"'
-                del headers['Vary'], headers['Server'], headers['Report-To'], \
-                    headers['NEL'], headers['Content-Encoding']
-                del ret_head["Content-Type"], ret_head["Content-Encoding"]
-                try:
-                    del ret_head["Transfer-Encoding"], headers['Transfer-Encoding']
-                except KeyError:
-                    pass
+                del_keys = ['Vary', 'Server', 'Report-To', 'NEL', 'Content-Encoding', 'Transfer-Encoding',
+                            'Content-Length']
+                del_ret = ['Content-Type', 'Content-Encoding', 'Transfer-Encoding', 'Content-Length']
+                for head in del_keys:
+                    try:
+                        del headers[head]
+                    except KeyError:
+                        pass
+                for head in del_ret:
+                    try:
+                        del ret_head[head]
+                    except KeyError:
+                        pass
                 text = await resp.text()
                 base_url = '/'.join(url.split('/')[:-1]) + '/'
-                print(text)
-                # input(base_url)
                 modified_text = ''
                 for line in text.split('\n'):
                     if line.startswith('#'):
@@ -48,14 +54,15 @@ async def handle(request: Request):
             async with session.get(url) as resp:
                 headers = resp.headers.copy()
                 headers['Access-Control-Allow-Origin'] = '*'
-                del headers['Vary'], headers['Server'], headers['Report-To'], \
-                    headers['NEL']
-                try:
-                    del headers['Transfer-Encoding'], headers['Content-Encoding']
-                except KeyError:
-                    pass
+                del_head = ['Vary', 'Server', 'Report-To', 'NEL', 'Transfer-Encoding', 'Content-Encoding']
+                for key in del_head:
+                    try:
+                        del headers[key]
+                    except KeyError:
+                        pass
                 data = await resp.read()
             return Response(content=data, headers=headers)
+
 
 app.add_api_route('/cors', handle, methods=['GET'])
 app.add_api_route('/', home, methods=['GET'])
