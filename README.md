@@ -9,7 +9,7 @@ To install and run the server, follow these steps:
 1. Clone the repository:
 
 ```py
-git clone https://github.com/masterz5398/m3u8_proxy-cors
+git clone https://github.com/masterz5398/m3u8_proxy-cors.git
 ```
 
 2. Install dependencies:
