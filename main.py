@@ -1,5 +1,6 @@
 import json
 import aiohttp
+import multidict
 import uvicorn
 from fastapi import FastAPI, Request, Response
 from fastapi.responses import RedirectResponse
@@ -17,15 +18,13 @@ async def handle(request: Request):
                                         "{\"User-Agent\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/111.0.0.0 Safari/537.36}\"}")
     headers_ = json.loads(headers_)
     headers_["User-Agent"] = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/111.0.0.0 Safari/537.36}"
-    headers_['sec-ch-ua-platform'] = "\"Windows\""
-    headers_['Sec-Fetch-Site'] = "same-site"
-    headers_['Sec-Fetch-Mode'] = "cors"
-    headers_['Sec-Fetch-Dest'] = "empty"
-    headers_['Accept'] = "*/*"
-    headers_['sec-ch-ua-mobile'] = "?0"
-    async with aiohttp.ClientSession(headers=headers_) as session:
+    async with aiohttp.ClientSession(headers=multidict.CIMultiDict(headers_)) as session:
         url = request.query_params.get('url')
+        url = url.replace("+", "%2B")
+        typr = request.query_params.get('origin', "normal")
         if url.endswith('.m3u8'):
+            if typr == "9anime":
+                url += "#.mp4"
             async with session.get(url) as resp:
                 headers = resp.headers.copy()
                 ret_head = resp.headers.copy()
@@ -48,16 +47,22 @@ async def handle(request: Request):
                 text = await resp.text()
                 base_url = '/'.join(url.split('/')[:-1]) + '/'
                 modified_text = ''
-                for line in text.split('\n'):
-                    if line.startswith('#'):
-                        modified_text += line + '\n'
-                        continue
-                    if line.startswith("https://"):
-                        modified_text += '/cors?url=' + line + '&headers=' + json.dumps(
+                if ("404 not" not in text) and ("404 Not" not in text):
+                    for line in text.split('\n'):
+                        if line.startswith('#'):
+                            modified_text += line + '\n'
+                            continue
+                        if line.startswith("https://"):
+                            modified_text += '/cors?url=' + line + '&headers=' + json.dumps(
+                                dict(ret_head)) + '\n'
+                            continue
+                        if not line.strip(" "):
+                            continue
+                        line = line.replace("+", "%2B")
+                        modified_text += '/cors?url=' + base_url + line + '&headers=' + json.dumps(
                             dict(ret_head)) + '\n'
-                        continue
-                    modified_text += '/cors?url=' + base_url + line + '&headers=' + json.dumps(
-                        dict(ret_head)) + '\n'
+                else:
+                    modified_text = text
                 return Response(content=modified_text, headers=headers)
         else:
             async with session.get(url) as resp:

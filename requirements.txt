@@ -1,3 +1,4 @@
 aiohttp
-uvicorn
-fastapi
+uvicorn~=0.21.1
+fastapi~=0.95.0
+multidict
