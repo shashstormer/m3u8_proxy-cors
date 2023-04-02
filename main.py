@@ -16,6 +16,13 @@ async def handle(request: Request):
     headers_ = request.query_params.get('headers',
                                         "{\"User-Agent\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/111.0.0.0 Safari/537.36}\"}")
     headers_ = json.loads(headers_)
+    headers_["User-Agent"] = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/111.0.0.0 Safari/537.36}"
+    headers_['sec-ch-ua-platform'] = "\"Windows\""
+    headers_['Sec-Fetch-Site'] = "same-site"
+    headers_['Sec-Fetch-Mode'] = "cors"
+    headers_['Sec-Fetch-Dest'] = "empty"
+    headers_['Accept'] = "*/*"
+    headers_['sec-ch-ua-mobile'] = "?0"
     async with aiohttp.ClientSession(headers=headers_) as session:
         url = request.query_params.get('url')
         if url.endswith('.m3u8'):
