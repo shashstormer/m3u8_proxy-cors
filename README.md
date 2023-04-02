@@ -27,7 +27,9 @@ The server will start listening on port 5010 by default. You can change the port
 
 ## Usage
 
-To use the server, simply replace the URL of the M3U8 playlist file in your application with the URL of the proxy server. For example, if your original URL was `http://example.com/video.m3u8`, you would replace it with `http://localhost:5010/cors?urlhttp://example.com/video.m3u8`.
+To use the server, simply replace the URL of the M3U8 playlist file in your application with the URL of the proxy server. For example, if your original URL was `https://example.com/video.m3u8`, you would replace it with `http://localhost:5010/cors?url=https://example.com/video.m3u8`.
+
+For 9anime you should add origin=9anime in query like ```http://localhost:5010/cors?url=https://example.com/video.m3u8&origin=9anime```
 
 ## Deploying to Vercel
 You can quickly deploy this project to Vercel with the following button:
