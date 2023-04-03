@@ -70,7 +70,7 @@ async def handle(request: Request):
             async with session.get(url) as resp:
                 headers = resp.headers.copy()
                 headers['Access-Control-Allow-Origin'] = '*'
-                del_head = ['Vary', 'Server', 'Report-To', 'NEL', 'Transfer-Encoding', 'Content-Encoding']
+                del_head = ['Vary', 'Server', 'Report-To', 'NEL', 'Transfer-Encoding', 'Content-Encoding', 'Content-Length']
                 for key in del_head:
                     try:
                         del headers[key]
