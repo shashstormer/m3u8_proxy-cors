@@ -33,7 +33,8 @@ async def handle(request: Request):
                 headers['Content-Disposition'] = 'attachment; filename="master.m3u8"'
                 del_keys = ['Vary', 'Server', 'Report-To', 'NEL', 'Content-Encoding', 'Transfer-Encoding',
                             'Content-Length']
-                del_ret = ['Content-Type', 'Content-Encoding', 'Transfer-Encoding', 'Content-Length']
+                del_ret = ['Content-Type', 'Content-Encoding', 'Transfer-Encoding', 'Content-Length', 'Access-Control-Allow-Origin', 'Report-To', 'Server',
+                          'Access-Control-Allow-Methods', 'Access-Control-Allow-Credentials']
                 for head in del_keys:
                     try:
                         del headers[head]
