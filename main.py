@@ -61,8 +61,8 @@ async def handle(request: Request):
                         if not line.strip(" "):
                             continue
                         line = line.replace("+", "%2B")
-                        modified_text += '/cors?url=' + base_url + line + '&headers=' + json.dumps(
-                            dict(ret_head)) + '\n'
+                        modified_text += '/cors?url=' + base_url + line + "\n" # + '&headers=' + json.dumps(
+                            # dict(ret_head)) + '\n'
                 else:
                     modified_text = text
                 return Response(content=modified_text, headers=headers)
