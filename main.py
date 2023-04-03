@@ -27,7 +27,8 @@ async def handle(request: Request):
                 url += "#.mp4"
             async with session.get(url) as resp:
                 headers = resp.headers.copy()
-                ret_head = resp.headers.copy()
+#                 ret_head = resp.headers.copy()
+                ret_head = {}
                 headers['Access-Control-Allow-Origin'] = '*'
                 headers['Access-Control-Expose-Headers'] = 'Content-Disposition'
                 headers['Content-Disposition'] = 'attachment; filename="master.m3u8"'
