@@ -89,9 +89,7 @@ async def handle(request: Request):
                 else:
                     modified_text = text
                 if len(list(TOKENS.keys())) > 10000:
-                    for key in TOKENS:
-                        del TOKENS[key]
-                        break
+                    del TOKENS[list(TOKENS.keys())[1]]
                 print(modified_text)
                 return Response(content=modified_text, headers=headers)
         else:
@@ -118,7 +116,10 @@ async def token_response(request: Request):
         "User-Agent"] = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/111.0.0.0 Safari/537.36}"
     async with aiohttp.ClientSession(headers=multidict.CIMultiDict(headers_)) as session:
         url = request.query_params.get('url')
-        url = TOKENS[url]
+        try:
+            url = TOKENS[url]
+        except KeyError:
+            url = TOKENS[list(TOKENS.keys())[0]]
         url = url.replace("+", "%2B")
         async with session.get(url) as resp:
             headers = resp.headers.copy()
