@@ -119,18 +119,20 @@ async def token_response(request: Request):
         try:
             url = TOKENS[url]
         except KeyError:
-            url = TOKENS[list(TOKENS.keys())[0]]
+            url = "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fwallpaperboat.com%2Fwp-content%2Fuploads%2F2019%2F06%2Fblack-screen-10.jpg&f=1&nofb=1&ipt=b6c5eed68d21751bdaac8be28c91db612efaeda5e4c655104f9a8d52bb1cfc29&ipo=images"
         url = url.replace("+", "%2B")
-        async with session.get(url) as resp:
-            headers = resp.headers.copy()
-            headers['Access-Control-Allow-Origin'] = '*'
-            del_head = ['Vary', 'Server', 'Report-To', 'NEL', 'Transfer-Encoding', 'Content-Encoding', 'Content-Length']
-            for key in del_head:
-                try:
-                    del headers[key]
-                except KeyError:
-                    pass
-            data = await resp.read()
+        if url:
+            async with session.get(url) as resp:
+                headers = resp.headers.copy()
+                headers['Access-Control-Allow-Origin'] = '*'
+                del_head = ['Vary', 'Server', 'Report-To', 'NEL', 'Transfer-Encoding', 'Content-Encoding',
+                            'Content-Length']
+                for key in del_head:
+                    try:
+                        del headers[key]
+                    except KeyError:
+                        pass
+                data = await resp.read()
     return Response(content=data, headers=headers)
 
 
