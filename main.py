@@ -73,7 +73,10 @@ async def handle(request: Request):
                 modified_text = ''
                 if ("404 not" not in text) and ("404 Not" not in text):
                     for line in text.split('\n'):
-                        if not line.strip(" "):
+                        line = line.strip(" ").strip('\n')
+                        if not line.strip(" ").strip('\n'):
+                            continue
+                        if line == "":
                             continue
                         if line.startswith('#'):
                             modified_text += line + '\n'
