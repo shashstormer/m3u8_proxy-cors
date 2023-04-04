@@ -114,6 +114,7 @@ async def token_response(request: Request):
     headers_ = json.loads(headers_)
     headers_[
         "User-Agent"] = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/111.0.0.0 Safari/537.36}"
+    headers = {'Access-Control-Allow-Origin': '*'}
     async with aiohttp.ClientSession(headers=multidict.CIMultiDict(headers_)) as session:
         url = request.query_params.get('url')
         try:
