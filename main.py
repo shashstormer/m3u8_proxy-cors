@@ -119,10 +119,7 @@ async def token_response(request: Request):
     headers = {'Access-Control-Allow-Origin': '*'}
     async with aiohttp.ClientSession(headers=multidict.CIMultiDict(headers_)) as session:
         url = request.query_params.get('url')
-        try:
-            url = TOKENS[url]
-        except KeyError:
-            url = "https://raw.githubusercontent.com/esc0rtd3w/blank-intro-videos/master/blank.mp4"
+        url = TOKENS[url]
         if url:
             async with session.get(url) as resp:
                 headers = resp.headers.copy()
