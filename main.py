@@ -80,6 +80,8 @@ async def handle(request: Request):
                             continue
                         line = line.replace("+", "%2B")
                         if ".m3u8" in line:
+                            if "http" not in line:
+                                line = base_url + line
                             modified_text += '/cors?url=' + line + '&headers=' + json.dumps(dict(ret_head)) + '\n'
                         else:
                             if ('http://' not in url) or ('https://' not in url):
