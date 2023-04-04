@@ -46,7 +46,7 @@ async def handle(request: Request):
         url = url.replace("+", "%2B")
         typr = request.query_params.get('origin', "normal")
         if url.endswith('.m3u8'):
-            if typr == "9anime":
+            if typr == "aninin":
                 url += "#.mp4"
             async with session.get(url) as resp:
                 headers = resp.headers.copy()
@@ -120,7 +120,6 @@ async def token_response(request: Request):
             url = TOKENS[url]
         except KeyError:
             url = "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fwallpaperboat.com%2Fwp-content%2Fuploads%2F2019%2F06%2Fblack-screen-10.jpg&f=1&nofb=1&ipt=b6c5eed68d21751bdaac8be28c91db612efaeda5e4c655104f9a8d52bb1cfc29&ipo=images"
-        url = url.replace("+", "%2B")
         if url:
             async with session.get(url) as resp:
                 headers = resp.headers.copy()
