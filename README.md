@@ -32,7 +32,7 @@ To use the server, simply replace the URL of the M3U8 playlist file in your appl
 For m3u8s ending with #.mp4 you should add origin=aninin in query like ```http://localhost:5010/cors?url=https://example.com/video.m3u8&origin=aninin```
 
 
-To set custom headers for a request you can do ```http://localhost:8000/cors?url=https://example.com/video.m3u8&headers={"User-Agent":"Mozilla/5.0 ...","referer":"https://example.com",...}```
+To set custom headers for a request you can do ```http://localhost:5010/cors?url=https://example.com/video.m3u8&headers={"User-Agent":"Mozilla/5.0 ...","referer":"https://example.com",...}```
 
 don't put spaces between the headers(you can put it inside the quotes) you might get a 500 error, 
 
