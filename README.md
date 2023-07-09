@@ -8,7 +8,7 @@ To install and run the server, follow these steps:
 
 1. Clone the repository:
     ```bash
-    git clone https://github.com/masterz5398/m3u8_proxy-cors.git
+    git clone https://github.com/shashstormer/m3u8_proxy-cors.git
     ```
 2. Install dependencies:
     
@@ -46,7 +46,7 @@ don't put spaces between the headers (you can put it inside the quotes) you migh
 ## Deploying to Vercel
 You can quickly deploy this project to Vercel with the following button:
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fmasterz5398%2Fm3u8_proxy-cors&project-name=m3u8-proxy-cors&repository-name=m3u8-proxy-cors)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fshashstormer%2Fm3u8_proxy-cors&project-name=m3u8-proxy-cors&repository-name=m3u8-proxy-cors)
 
 
 contributions are welcome you can make a pull request I will review it and merge it if it benifits the program
