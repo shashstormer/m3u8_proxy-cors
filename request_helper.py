@@ -51,7 +51,7 @@ class Requester:
         queries = self.query(url)
         host = self.get_host(url)
         path = url.path
-        return host+path+("?"+self.query_string(queries) if queries else "")
+        return host + path + ("?" + self.query_string(queries) if queries else "")
 
     @staticmethod
     def safe_sub(url):
@@ -65,7 +65,7 @@ class Requester:
     def query_string(queries: dict):
         strings = []
         for query in queries:
-            strings.append(query+"="+quote(queries[query]))
+            strings.append(query + "=" + quote(queries[query]))
         return "&".join(strings)
 
     @staticmethod
@@ -75,6 +75,12 @@ class Requester:
 
     @staticmethod
     def m3u8(content):
+        """
+        it has been implemented in th cors.py file
+        may be moved here in the future (not sure)
+        :param content:
+        :return:
+        """
         pass
 
     def __str__(self):

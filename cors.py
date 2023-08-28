@@ -20,17 +20,21 @@ async def cors(request: Request, origins) -> Response:
         additional_params=json.loads(request.get('params', '{}'))
     )
     headers['Access-Control-Allow-Origin'] = origins
-    if "text/html" in headers.get('Content-Type'):
-        pass
-    else:
+    if "text/html" not in headers.get('Content-Type'):
         headers['Content-Disposition'] = 'attachment; filename="master.m3u8"'
-    del_keys = ['Vary', 'Server', 'Report-To', 'NEL', 'Content-Encoding', 'Transfer-Encoding',
-                'Content-Length']
+    del_keys = [
+        'Vary',
+        'Server',
+        'Report-To',
+        'NEL',
+        'Content-Encoding',
+        'Transfer-Encoding',
+        'Content-Length',
+        "Content-Type"
+    ]
     for key in del_keys:
-        try:
-            del headers[key]
-        except KeyError:
-            pass
+        headers.pop(key, None)
+
     if (file_type == "m3u8" or "m3u8" in url) and code != 404:
         content = content.decode("utf-8")
         new_content = ""
@@ -50,8 +54,6 @@ async def cors(request: Request, origins) -> Response:
                 )
             new_content += "\n"
         content = new_content
-    elif "text/html" in headers.get('Content-Type'):
-        pass
     return Response(content, code, headers=headers)
 
 

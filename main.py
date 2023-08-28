@@ -33,7 +33,7 @@ try:
 except TypeError:
     port = int(default_port)
 # You don't need to change anything here unless you want to run it on a different or specific port
-# to run on different port you can set the port env variable
+# to run on a different port you can set the port env variable
 
 add_cors(app, allowed_origins)
 
