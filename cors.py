@@ -12,25 +12,27 @@ async def cors(request: Request, origins) -> Response:
     main_url = requested.host + requested.path + "?url="
     url = requested.query_params.get("url")
     requested = Requester(url)
+    headers_to_give = request.headers.mutablecopy()
+    headers_to_give.update(json.loads(request.query_params.get("headers", "{}").replace("'", '"')))
     content, headers, code, cookies = requested.get(
         data=None,
-        headers=json.loads(request.query_params.get("headers", "{}").replace("'", '"')),
+        headers=headers_to_give,
         method=request.query_params.get("method", "GET"),
         json_data=json.loads(request.query_params.get("json", "{}")),
         additional_params=json.loads(request.get('params', '{}'))
     )
     headers['Access-Control-Allow-Origin'] = origins
-    if "text/html" not in headers.get('Content-Type'):
-        headers['Content-Disposition'] = 'attachment; filename="master.m3u8"'
+    # if "text/html" not in headers.get('Content-Type'):
+    #     headers['Content-Disposition'] = 'attachment; filename="master.m3u8"'
     del_keys = [
-        'Vary',
-        'Server',
-        'Report-To',
-        'NEL',
+        # 'Vary',
+        # 'Server',
+        # 'Report-To',
+        # 'NEL',
         'Content-Encoding',
         'Transfer-Encoding',
         'Content-Length',
-        "Content-Type"
+        # "Content-Type"
     ]
     for key in del_keys:
         headers.pop(key, None)
@@ -54,6 +56,10 @@ async def cors(request: Request, origins) -> Response:
                 )
             new_content += "\n"
         content = new_content
+    if "location" in headers:
+        if headers["location"].startswith("/"):
+            headers["location"] = requested.host + headers["location"]
+        headers["location"] = main_url+headers["location"]
     return Response(content, code, headers=headers)
 
 

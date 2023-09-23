@@ -34,10 +34,10 @@ class Requester:
         params.update(additional_params)
         if method == "post":
             data = requests.post(self.req_url, headers=headers, params=params, data=data, timeout=35,
-                                 json=json_data)
+                                 json=json_data, allow_redirects=False)
         else:
             data = requests.get(self.req_url, headers=headers, params=params, data=data, timeout=35,
-                                json=json_data)
+                                json=json_data, allow_redirects=False)
         return [data.content, data.headers, data.status_code, data.cookies]
 
     def headers(self, headers):
