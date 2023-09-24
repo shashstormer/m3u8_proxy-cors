@@ -77,5 +77,5 @@ def add_cors(app, origins, setup_with_no_url_param=False):
         async def cors_caller_for_relative(request: Request, mistaken_relative: str, _last_requested: Annotated[str, Cookie(...)]) -> RedirectResponse:
             x = Requester(str(request.url))
             x = x.query_string(x.query_params)
-            resp = RedirectResponse(f"/cors?url={_last_requested}{mistaken_relative}{'&' + x if x else ''}")
+            resp = RedirectResponse(f"/cors?url={_last_requested}/{mistaken_relative}{'&' + x if x else ''}")
             return resp
