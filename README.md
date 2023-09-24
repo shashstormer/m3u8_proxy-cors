@@ -48,5 +48,10 @@ You can quickly deploy this project to Vercel with the following button:
 
 [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fshashstormer%2Fm3u8_proxy-cors&project-name=m3u8-proxy-cors&repository-name=m3u8-proxy-cors)
 
+## Security issues
+
+1. > coppies user cookies while requesting. This leads to possibility of leakage of acces tokens. vulnerability will be fixed in future
+use older version to bypass vulnerability
+if you wish to use latest features you may host this on a different domain than your site.
 
 contributions are welcome you can make a pull request I will review it and merge it if it benifits the program

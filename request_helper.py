@@ -26,18 +26,19 @@ class Requester:
     def full(self, path_qs):
         return self.host + path_qs
 
-    def get(self, data=None, headers=None, method='get', json_data=None, additional_params=None):
+    def get(self, data=None, headers=None, method='get', json_data=None, additional_params=None, cookies=None):
         headers = self.headers(headers)
         additional_params = {} if additional_params is None or type(additional_params) != dict else additional_params
+        cookies = cookies if cookies else {}
         json_data = {} if json_data is None else json_data
         params = self.query_params.copy()
         params.update(additional_params)
         if method == "post":
             data = requests.post(self.req_url, headers=headers, params=params, data=data, timeout=35,
-                                 json=json_data, allow_redirects=False)
+                                 json=json_data, allow_redirects=False, cookies=cookies)
         else:
             data = requests.get(self.req_url, headers=headers, params=params, data=data, timeout=35,
-                                json=json_data, allow_redirects=False)
+                                json=json_data, allow_redirects=False, cookies=cookies)
         return [data.content, data.headers, data.status_code, data.cookies]
 
     def headers(self, headers):

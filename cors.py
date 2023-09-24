@@ -17,6 +17,7 @@ async def cors(request: Request, origins) -> Response:
     content, headers, code, cookies = requested.get(
         data=None,
         headers=json.loads(request.query_params.get("headers", "{}").replace("'", '"')),
+        cookies=request.cookies,
         method=request.query_params.get("method", "GET"),
         json_data=json.loads(request.query_params.get("json", "{}")),
         additional_params=json.loads(request.get('params', '{}'))
