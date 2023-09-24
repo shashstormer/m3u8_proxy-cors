@@ -13,10 +13,13 @@ async def cors(request: Request, origins) -> Response:
     requested = Requester(str(request.url))
     main_url = requested.host + requested.path + "?url="
     url = requested.query_params.get("url")
+    url += "?"+requested.query_string(requested.remaining_params)
     requested = Requester(url)
+    hdrs = request.headers.mutablecopy()
+    hdrs.update(json.loads(request.query_params.get("headers", "{}").replace("'", '"')))
     content, headers, code, cookies = requested.get(
         data=None,
-        headers=json.loads(request.query_params.get("headers", "{}").replace("'", '"')),
+        headers=hdrs,
         cookies=request.cookies,
         method=request.query_params.get("method", "GET"),
         json_data=json.loads(request.query_params.get("json", "{}")),
@@ -26,14 +29,14 @@ async def cors(request: Request, origins) -> Response:
     # if "text/html" not in headers.get('Content-Type'):
     #     headers['Content-Disposition'] = 'attachment; filename="master.m3u8"'
     del_keys = [
-        'Vary',
-        'Server',
-        'Report-To',
-        'NEL',
-        'Content-Encoding',
+        # 'Vary',
+        # 'Server',
+        # 'Report-To',
+        # 'NEL',
+        # 'Content-Encoding',
         'Transfer-Encoding',
         'Content-Length',
-        "Content-Type"
+        # "Content-Type"
     ]
     for key in del_keys:
         headers.pop(key, None)

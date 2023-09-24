@@ -19,16 +19,17 @@ class Requester:
         params.pop("method", None)
         params.pop("json", None)
         params.pop("params", None)
-        self.req_url = self.host + self.path + self.query_string(params)
+        self.remaining_params = params
+        self.req_url = self.host + self.path+"?" + self.query_string(params)
         self.base_headers = {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko)'
+            'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko)'
                           ' Chrome/114.0.0.0 Safari/537.36',
-            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,'
+            'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,'
                       'image/webp,image/apng,*/*;q=0.8',
-            'Connection': 'keep-alive',
-            'Referer': None,
-            "SEC-CH-UA-MOBILE": "?0",
-            "SEC-CH-UA-PLATFORM": "Linux",
+            'connection': 'keep-alive',
+            'referer': None,
+            "sec-ch-ua-mobile": "?0",
+            "sec-ch-ua-platform": "Linux",
         }
 
     def full(self, path_qs):
@@ -38,23 +39,28 @@ class Requester:
         headers = self.headers(headers)
         try:
             additional_params = json.loads(additional_params)
-        except json.JSONDecodeError:
+        except (json.JSONDecodeError, TypeError):
             pass
         additional_params = {} if additional_params is None or type(additional_params) != dict else additional_params
         cookies = cookies if cookies else {}
         json_data = {} if json_data is None else json_data
+        if additional_params:
+            self.req_url += "&" if "=" in self.req_url else ""
+            self.req_url += self.query_string(additional_params)
         print(f"getting {self.req_url} with")
         if method == "post":
-            data = requests.post(self.req_url, headers=headers, params=additional_params, data=data, timeout=35,
+            data = requests.post(self.req_url, headers=headers, data=data, timeout=35,
                                  json=json_data, allow_redirects=False, cookies=cookies)
         else:
-            data = requests.get(self.req_url, headers=headers, params=additional_params, data=data, timeout=35,
+            data = requests.get(self.req_url, headers=headers, data=data, timeout=35,
                                 json=json_data, allow_redirects=False, cookies=cookies)
         return [data.content, data.headers, data.status_code, data.cookies]
 
     def headers(self, headers):
         header = self.base_headers.copy()
         header.update(headers if headers is not None else header)
+        header.pop("host", None)
+        header.pop("cookie", None)
         return header
 
     def safe(self, url):
