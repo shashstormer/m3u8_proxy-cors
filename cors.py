@@ -38,7 +38,7 @@ async def cors(request: Request, origins) -> Response:
     for key in del_keys:
         headers.pop(key, None)
 
-    if (file_type == "m3u8" or "m3u8" in url) and code != 404:
+    if (file_type == "m3u8" or ".m3u8" in url) and code != 404:
         content = content.decode("utf-8")
         new_content = ""
         for line in content.split("\n"):

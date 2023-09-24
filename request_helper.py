@@ -1,5 +1,6 @@
 from urllib.parse import urlparse, parse_qs, quote, unquote
 import requests
+import json
 
 
 class Requester:
@@ -11,7 +12,14 @@ class Requester:
         self.query_params = self.query(parsed_url)
         self.host = self.get_host(parsed_url)
         self.path = parsed_url.path
-        self.req_url = self.host + self.path
+        params = self.query_params.copy()
+        params.pop("url", None)
+        params.pop("type", None)
+        params.pop("headers", None)
+        params.pop("method", None)
+        params.pop("json", None)
+        params.pop("params", None)
+        self.req_url = self.host + self.path + self.query_string(params)
         self.base_headers = {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko)'
                           ' Chrome/114.0.0.0 Safari/537.36',
@@ -28,16 +36,19 @@ class Requester:
 
     def get(self, data=None, headers=None, method='get', json_data=None, additional_params=None, cookies=None):
         headers = self.headers(headers)
+        try:
+            additional_params = json.loads(additional_params)
+        except json.JSONDecodeError:
+            pass
         additional_params = {} if additional_params is None or type(additional_params) != dict else additional_params
         cookies = cookies if cookies else {}
         json_data = {} if json_data is None else json_data
-        params = self.query_params.copy()
-        params.update(additional_params)
+        print(f"getting {self.req_url} with")
         if method == "post":
-            data = requests.post(self.req_url, headers=headers, params=params, data=data, timeout=35,
+            data = requests.post(self.req_url, headers=headers, params=additional_params, data=data, timeout=35,
                                  json=json_data, allow_redirects=False, cookies=cookies)
         else:
-            data = requests.get(self.req_url, headers=headers, params=params, data=data, timeout=35,
+            data = requests.get(self.req_url, headers=headers, params=additional_params, data=data, timeout=35,
                                 json=json_data, allow_redirects=False, cookies=cookies)
         return [data.content, data.headers, data.status_code, data.cookies]
 
