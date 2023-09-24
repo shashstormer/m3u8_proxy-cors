@@ -16,6 +16,7 @@ async def cors(request: Request, origins) -> Response:
     url += "?"+requested.query_string(requested.remaining_params)
     requested = Requester(url)
     hdrs = request.headers.mutablecopy()
+    hdrs["Accept-Encoding"] = ""
     hdrs.update(json.loads(request.query_params.get("headers", "{}").replace("'", '"')))
     content, headers, code, cookies = requested.get(
         data=None,
@@ -29,7 +30,7 @@ async def cors(request: Request, origins) -> Response:
     # if "text/html" not in headers.get('Content-Type'):
     #     headers['Content-Disposition'] = 'attachment; filename="master.m3u8"'
     del_keys = [
-        # 'Vary',
+        'Vary',
         # 'Server',
         # 'Report-To',
         # 'NEL',
