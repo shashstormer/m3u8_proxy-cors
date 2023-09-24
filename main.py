@@ -14,6 +14,9 @@ except TypeError:
     docs_url = '/docs' if enable_docs else None
     redoc_url = '/redoc' if enable_docs else None
 
+allow_no_url_param_also = os.getenv("no_url_param", "false")
+allow_no_url_param_also = allow_no_url_param_also == "true"
+
 
 app = FastAPI(openapi_url=None, docs_url=docs_url, redoc_url=redoc_url)
 default_port = "5010"
@@ -35,7 +38,7 @@ except TypeError:
 # You don't need to change anything here unless you want to run it on a different or specific port
 # to run on a different port you can set the port env variable
 
-add_cors(app, allowed_origins)
+add_cors(app, allowed_origins, allow_no_url_param_also)
 
 if __name__ == '__main__':
     uvicorn.run(app, host="0.0.0.0", port=port)

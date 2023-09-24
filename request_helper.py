@@ -85,6 +85,11 @@ class Requester:
     def __str__(self):
         return f'Domain: {self.domain}\nScheme: {self.schema}\nPath: {self.path}\nquery parameters: {self.query_params}'
 
+    @staticmethod
+    def _cf_c(pgd):
+        if "_cf_chl_opt" in pgd and "":
+            pass
+
 
 if __name__ == "__main__":
     _url = "https://example.com/test.mp4?token=3892&idea=2(]/s[e3r2&url=https%3A//example.com/test.mp4%3Ftoken%3D3892%26idea%3D2%28%5D/s%5Be3r2"
