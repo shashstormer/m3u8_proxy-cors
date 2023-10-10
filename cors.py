@@ -34,7 +34,7 @@ async def cors(request: Request, origins) -> Response:
         # 'Server',
         # 'Report-To',
         # 'NEL',
-        # 'Content-Encoding',
+        'Content-Encoding',
         'Transfer-Encoding',
         'Content-Length',
         # "Content-Type"
