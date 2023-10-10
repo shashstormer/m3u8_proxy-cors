@@ -6,7 +6,7 @@ from request_helper import Requester
 from typing import Annotated
 
 
-async def cors(request: Request, origins) -> Response:
+async def cors(request: Request, origins, method="GET") -> Response:
     if not request.query_params.get('url'):
         return Response()
     file_type = request.query_params.get('type')
@@ -22,7 +22,7 @@ async def cors(request: Request, origins) -> Response:
         data=None,
         headers=hdrs,
         cookies=request.cookies,
-        method=request.query_params.get("method", "GET"),
+        method=request.query_params.get("method", method),
         json_data=json.loads(request.query_params.get("json", "{}")),
         additional_params=json.loads(request.get('params', '{}'))
     )
@@ -77,9 +77,21 @@ def add_cors(app, origins, setup_with_no_url_param=False):
     async def cors_caller(request: Request) -> Response:
         return await cors(request, origins=origins)
 
+    @app.post(cors_path)
+    async def cors_caller_post(request: Request) -> Response:
+        return await cors(request, origins=origins, method="POST")
+
     if setup_with_no_url_param:
         @app.get("/{mistaken_relative:path}")
         async def cors_caller_for_relative(request: Request, mistaken_relative: str, _last_requested: Annotated[str, Cookie(...)]) -> RedirectResponse:
+            x = Requester(str(request.url))
+            x = x.query_string(x.query_params)
+            resp = RedirectResponse(f"/cors?url={_last_requested}/{mistaken_relative}{'&' + x if x else ''}")
+            return resp
+
+        @app.post("/{mistaken_relative:path}")
+        async def cors_caller_for_relative(request: Request, mistaken_relative: str,
+                                           _last_requested: Annotated[str, Cookie(...)]) -> RedirectResponse:
             x = Requester(str(request.url))
             x = x.query_string(x.query_params)
             resp = RedirectResponse(f"/cors?url={_last_requested}/{mistaken_relative}{'&' + x if x else ''}")
