@@ -7,6 +7,9 @@ from typing import Annotated
 
 
 async def cors(request: Request, origins, method="GET") -> Response:
+    current_domain = f"{request.url.scheme}://{request.url.hostname}"
+    if current_domain not in origins.replace(", ", ",").split(",") and origins != "*":
+        return Response()
     if not request.query_params.get('url'):
         return Response()
     file_type = request.query_params.get('type')
@@ -26,7 +29,7 @@ async def cors(request: Request, origins, method="GET") -> Response:
         json_data=json.loads(request.query_params.get("json", "{}")),
         additional_params=json.loads(request.get('params', '{}'))
     )
-    headers['Access-Control-Allow-Origin'] = origins
+    headers['Access-Control-Allow-Origin'] = current_domain
     # if "text/html" not in headers.get('Content-Type'):
     #     headers['Content-Disposition'] = 'attachment; filename="master.m3u8"'
     del_keys = [
