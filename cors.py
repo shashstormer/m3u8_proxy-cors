@@ -8,6 +8,8 @@ from typing import Annotated
 
 async def cors(request: Request, origins, method="GET") -> Response:
     current_domain = request.headers.get("origin")
+    if current_domain is None:
+        current_domain = origins
     if current_domain not in origins.replace(", ", ",").split(",") and origins != "*":
         return Response()
     if not request.query_params.get('url'):
