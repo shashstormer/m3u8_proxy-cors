@@ -47,6 +47,7 @@ class Requester:
         if additional_params:
             self.req_url += "&" if "=" in self.req_url else ""
             self.req_url += self.query_string(additional_params)
+        self.req_url = self.req_url.replace("%3F", "&").replace("%3f", "&").replace("%3D", "=").replace("%3d", "=").replace("%20", " ")
         print(f"getting {self.req_url} with")
         if method == "post":
             data = requests.post(self.req_url, headers=headers, data=data, timeout=35,
