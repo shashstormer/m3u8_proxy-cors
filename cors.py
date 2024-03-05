@@ -17,6 +17,7 @@ async def cors(request: Request, origins, method="GET") -> Response:
     file_type = request.query_params.get('type')
     requested = Requester(str(request.url))
     main_url = requested.host + requested.path + "?url="
+    main_url = main_url.replace("http:/", "https:/")
     url = requested.query_params.get("url")
     url += "?"+requested.query_string(requested.remaining_params)
     requested = Requester(url)

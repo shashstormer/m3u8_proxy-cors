@@ -1,6 +1,6 @@
 import os
 import uvicorn
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, Response
 from fastapi.responses import RedirectResponse
 from cors import add_cors
 from requestez import Session
@@ -50,7 +50,7 @@ async def requestez(url: str, referer: str, to: str):
     }
     _to = session.where_to(url, headers)
     print(_to)
-    return RedirectResponse(to+_to["to"])
+    return Response(_to["to"])
 
 
 if __name__ == '__main__':
