@@ -3,6 +3,7 @@ import uvicorn
 from fastapi import FastAPI, Request
 from fastapi.responses import RedirectResponse
 from cors import add_cors
+from requestez import Session
 
 try:
     enable_docs = bool(os.getenv("documentation", False))
@@ -17,7 +18,6 @@ except TypeError:
 allow_no_url_param_also = os.getenv("no_url_param", "false")
 allow_no_url_param_also = allow_no_url_param_also == "true"
 
-
 app = FastAPI(openapi_url=None, docs_url=docs_url, redoc_url=redoc_url)
 default_port = "5010"
 
@@ -25,7 +25,6 @@ if enable_docs:
     @app.get('/')
     async def home(_: Request):
         return RedirectResponse('/docs')
-
 
 allowed_origins = os.getenv("origins", "*")
 # You may set your environment variable with the domains you want to allow requests from(your site)
@@ -39,6 +38,20 @@ except TypeError:
 # to run on a different port you can set the port env variable
 
 add_cors(app, allowed_origins, allow_no_url_param_also)
+
+
+@app.get("/mk_req")
+async def requestez(url: str, referer: str, to: str):
+    session = Session()
+    headers = {
+        "Referer": referer,
+        "Sec-Fetch-Dest": 'iframe',
+        "Sec-Ch-Ua-Platform": '"Windows"'
+    }
+    _to = session.where_to(url, headers)
+    print(_to)
+    return RedirectResponse(to+_to["to"])
+
 
 if __name__ == '__main__':
     uvicorn.run(app, host="0.0.0.0", port=port)
