@@ -1,13 +1,27 @@
 import json
 import os
+import threading
+
 from fastapi import Request, Response, Cookie
 from fastapi.responses import RedirectResponse
-from request_helper import Requester
+from request_helper import Requester, requests
 from typing import Annotated
+
+server_domain = ""
+urls_to_cache = []
+
+
+def cache_urls():
+    while True:
+        if urls_to_cache:
+            url = urls_to_cache.pop(0)
+            requests.get(url)
 
 
 async def cors(request: Request, origins, method="GET") -> Response:
+    global server_domain
     current_domain = request.headers.get("origin")
+    server_domain = current_domain
     if current_domain is None:
         current_domain = origins
     if current_domain not in origins.replace(", ", ",").split(",") and origins != "*":
@@ -19,7 +33,7 @@ async def cors(request: Request, origins, method="GET") -> Response:
     main_url = requested.host + requested.path + "?url="
     main_url = main_url.replace("http:/", "https:/")
     url = requested.query_params.get("url")
-    url += "?"+requested.query_string(requested.remaining_params)
+    url += "?" + requested.query_string(requested.remaining_params)
     requested = Requester(url)
     hdrs = request.headers.mutablecopy()
     hdrs["Accept-Encoding"] = ""
@@ -55,16 +69,22 @@ async def cors(request: Request, origins, method="GET") -> Response:
             if line.startswith("#"):
                 new_content += line
             elif line.startswith('/'):
-                new_content += main_url + requested.safe_sub(requested.host + line)
+                url_line = main_url + requested.safe_sub(requested.host + line)
+                urls_to_cache.append(url_line)
+                new_content += url_line
             elif line.startswith('http'):
-                new_content += main_url + requested.safe_sub(line)
+                url_line = main_url + requested.safe_sub(line)
+                urls_to_cache.append(url_line)
+                new_content += url_line
             elif line.strip(' '):
-                new_content += main_url + requested.safe_sub(
+                url_line = main_url + requested.safe_sub(
                     requested.host +
                     '/'.join(str(requested.path).split('?')[0].split('/')[:-1]) +
                     '/' +
                     requested.safe_sub(line)
                 )
+                new_content += url_line
+                urls_to_cache.append(url_line)
             new_content += "\n"
         content = new_content
     if "location" in headers:
@@ -86,10 +106,11 @@ def add_cors(app, origins, setup_with_no_url_param=False):
     @app.post(cors_path)
     async def cors_caller_post(request: Request) -> Response:
         return await cors(request, origins=origins, method="POST")
-
+    threading.Thread(target=cache_urls).start()
     if setup_with_no_url_param:
         @app.get("/{mistaken_relative:path}")
-        async def cors_caller_for_relative(request: Request, mistaken_relative: str, _last_requested: Annotated[str, Cookie(...)]) -> RedirectResponse:
+        async def cors_caller_for_relative(request: Request, mistaken_relative: str,
+                                           _last_requested: Annotated[str, Cookie(...)]) -> RedirectResponse:
             x = Requester(str(request.url))
             x = x.query_string(x.query_params)
             resp = RedirectResponse(f"/cors?url={_last_requested}/{mistaken_relative}{'&' + x if x else ''}")
