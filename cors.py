@@ -14,12 +14,14 @@ urls_to_cache = []
 def cache_urls():
     while True:
         if urls_to_cache:
+            print("URLS PRESENT")
             url = urls_to_cache.pop(0)
+            print(url)
             requests.get(url)
 
 
 async def cors(request: Request, origins, method="GET") -> Response:
-    global server_domain
+    global server_domain, urls_to_cache
     current_domain = request.headers.get("origin")
     server_domain = current_domain
     if current_domain is None:
@@ -85,6 +87,7 @@ async def cors(request: Request, origins, method="GET") -> Response:
                 )
                 new_content += url_line
                 urls_to_cache.append(url_line)
+            print(urls_to_cache)
             new_content += "\n"
         content = new_content
     if "location" in headers:
@@ -94,6 +97,8 @@ async def cors(request: Request, origins, method="GET") -> Response:
     resp = Response(content, code, headers=headers)
     resp.set_cookie("_last_requested", requested.host, max_age=3600, httponly=True)
     return resp
+
+threading.Thread(target=cache_urls).start()
 
 
 def add_cors(app, origins, setup_with_no_url_param=False):
@@ -106,7 +111,6 @@ def add_cors(app, origins, setup_with_no_url_param=False):
     @app.post(cors_path)
     async def cors_caller_post(request: Request) -> Response:
         return await cors(request, origins=origins, method="POST")
-    threading.Thread(target=cache_urls).start()
     if setup_with_no_url_param:
         @app.get("/{mistaken_relative:path}")
         async def cors_caller_for_relative(request: Request, mistaken_relative: str,
