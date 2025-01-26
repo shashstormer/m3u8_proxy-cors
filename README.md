@@ -2,6 +2,8 @@
 
 This is a simple Python proxy server that adds CORS headers to M3U8 playlist files. It allows you to bypass CORS restrictions when playing M3U8 playlists in browsers.
 
+This server has scaling issues currently and is not recomended for concurent users over 50 (may be fixed in the future at the devs leisure)
+
 ## Installation
 
 To install and run the server, follow these steps:
